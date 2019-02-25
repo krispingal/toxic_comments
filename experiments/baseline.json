@@ -1,0 +1,51 @@
+{
+    "dataset_reader": {
+      "type": "toxic_reader",
+      "max_length": 5000
+    },
+    "train_data_path": "/home/krispin/src/nlp/data/train.csv",
+    "validation_data_path": "/home/krispin/src/nlp/data/validation.csv",
+    
+    "model": {
+      "type": "toxic_classifier",
+      "text_field_embedder": {
+        "tokens": {
+          "type": "embedding",
+          "pretrained_file": "/home/krispin/Data/glove.6B/glove.6B.100d.txt",
+          "embedding_dim": 100,
+          "trainable": false
+        }
+      },
+      "encoder": {
+        "type": "lstm",
+        "bidirectional": true,
+        "input_size": 100,
+        "hidden_size": 100,
+        "num_layers": 2,
+        "dropout": 0.2
+      },
+      "classifier_feedforward": {
+        "input_dim": 200,
+        "num_layers": 2,
+        "hidden_dims": [200, 6],
+        "activations": ["tanh", "linear"],
+        "dropout": [0.2, 0.0]
+      }
+     },
+    "iterator": {
+      "type": "bucket",
+      "sorting_keys": [["text", "num_tokens"]],
+      "batch_size": 64
+    },
+
+    "trainer": {
+      "num_epochs": 40,
+      "patience": 10,
+      "cuda_device": -1,
+      "grad_clipping": 5.0,
+      "validation_metric": "+accuracy",
+      "optimizer": {
+        "type": "adagrad"
+      }
+    }
+}
